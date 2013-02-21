@@ -101,7 +101,8 @@ public class ConnectionService extends IntentService {
 	public static final int MSG_SEND_APICALL = 0x08;
 	public static final int MSG_SEND_HANDLED_APICALL = 0x09;
 	public static final int MSG_ERROR = 0x0a;	
-
+	public static final int MSG_DESTROY = 0x0b;
+        
 	public static final int RESULT_SUCCESS = 0x01;
 	
 	/**
@@ -535,6 +536,13 @@ public class ConnectionService extends IntentService {
 					Log.i(TAG, "No more clients, cooling down service.");
 					cooldown();
 				}
+				break;
+			case MSG_DESTROY:
+				//Maybe we need to notify other clients...
+				// Currently, I only have one client at time.
+				mClients.clear();
+				Log.d(TAG, "Force service destruction.");
+				stopSelf();
 				break;
 			case MSG_SEND_APICALL: {
 				Log.d(TAG, "Sending new API call..");

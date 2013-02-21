@@ -324,6 +324,35 @@ public class ConnectionManager {
 	}
 
 	/**
+	 * Force service destruction.
+	 * 
+	 * Call this function will disconnect all clients.
+	 * Run this only if you have to reconfigure XBMC connection settings
+	 */
+	public void forceDestroy() {
+		if (mIsBound && mService != null) {
+			Log.d(TAG, "Force Destroying service...");
+			// If we have received the service, and hence registered with it,
+			// then now is the time to unregister.
+			try {
+				final Message msg = Message.obtain(null,
+						ConnectionService.MSG_DESTROY);
+				msg.replyTo = mMessenger;
+				mService.send(msg);
+			} catch (RemoteException e) {
+				Log.e(TAG, "Error destroying service: " + e.getMessage(), e);
+				// There is nothing special we need to do if the service has
+				// crashed.
+			}
+			// Detach our existing connection.
+			mContext.unbindService(mConnection);
+			mIsBound = false;
+		} else {
+			Log.d(TAG, "We can't destroy a service we are not connected to.");
+		}
+	}
+
+	/**
 	 * Connection used to communicate with the service.
 	 */
 	private final ServiceConnection mConnection = new ServiceConnection() {
