@@ -552,6 +552,7 @@ public class ConnectionService extends IntentService {
 				mClientMap.put(call.getId(), msg.replyTo);
 				if (mOut == null) {
 					mPendingCalls.add(call);
+					notifyError(new ApiException(ApiException.IO_EXCEPTION, "Connection to XBMC fail!", null), call.getId());
 				} else {
 					writeSocket(call);
 				}
